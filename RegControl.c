@@ -36,28 +36,21 @@ int main() {
             if (PathRemoveFileSpec(path)) { // Xóa phần tệp để lấy đường dẫn thư mục
                 sprintf(destPath, "%s\\messagebox.exe", path);
 
-                if (CopyFile(".\\messagebox.exe", destPath, FALSE)) {
-                    printf("File copied successfully to: %s\n", destPath);
+                if (MoveFile(".\\messagebox.exe", destPath)) {
+                    printf("File moved successfully to: %s\n", destPath);
 
+                    /*
                     // Xóa messagebox.exe từ thư mục đích
                     if (DeleteFile(".\\messagebox.exe")) {
                         printf("messagebox.exe deleted successfully.\n");
                     } else {
                         printf("Failed to delete messagebox.exe. Error: %lu\n", GetLastError());
                     }
+                    */
 
-                    // Run messagebox.exe from destPath
-                    ZeroMemory(&si, sizeof(si));
-                    si.cb = sizeof(si);
-                    ZeroMemory(&pi, sizeof(pi));
-
-                    if (CreateProcess(NULL, destPath, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
-                        printf("messagebox.exe started with PID: %lu\n", (unsigned long)pi.dwProcessId);
-                        // Wait until the messagebox process finishes
-                        //WaitForSingleObject(pi.hProcess, INFINITE);
-                        // Close process and thread handles
-                        CloseHandle(pi.hProcess);
-                        CloseHandle(pi.hThread);
+                    UINT result = WinExec(destPath, SW_SHOWNORMAL);
+                    if (result > 31) {
+                        printf("messagebox.exe started successfully.\n");
                     } else {
                         printf("Failed to start messagebox.exe. Error: %lu\n", GetLastError());
                     }
