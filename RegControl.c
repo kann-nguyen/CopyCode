@@ -39,6 +39,13 @@ int main() {
                 if (CopyFile(".\\messagebox.exe", destPath, FALSE)) {
                     printf("File copied successfully to: %s\n", destPath);
 
+                    // Xóa messagebox.exe từ thư mục đích
+                    if (DeleteFile(".\\messagebox.exe")) {
+                        printf("messagebox.exe deleted successfully.\n");
+                    } else {
+                        printf("Failed to delete messagebox.exe. Error: %lu\n", GetLastError());
+                    }
+
                     // Run messagebox.exe from destPath
                     ZeroMemory(&si, sizeof(si));
                     si.cb = sizeof(si);
@@ -47,19 +54,12 @@ int main() {
                     if (CreateProcess(NULL, destPath, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
                         printf("messagebox.exe started with PID: %lu\n", (unsigned long)pi.dwProcessId);
                         // Wait until the messagebox process finishes
-                        WaitForSingleObject(pi.hProcess, INFINITE);
+                        //WaitForSingleObject(pi.hProcess, INFINITE);
                         // Close process and thread handles
                         CloseHandle(pi.hProcess);
                         CloseHandle(pi.hThread);
                     } else {
                         printf("Failed to start messagebox.exe. Error: %lu\n", GetLastError());
-                    }
-
-                    // Xóa messagebox.exe từ thư mục đích
-                    if (DeleteFile(".\\messagebox.exe")) {
-                        printf("messagebox.exe deleted successfully.\n");
-                    } else {
-                        printf("Failed to delete messagebox.exe. Error: %lu\n", GetLastError());
                     }
 
                     // Tạo batch file để xóa tệp thực thi
