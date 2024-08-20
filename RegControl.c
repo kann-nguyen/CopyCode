@@ -36,7 +36,7 @@ int main() {
             if (PathRemoveFileSpec(path)) { // Xóa phần tệp để lấy đường dẫn thư mục
                 sprintf(destPath, "%s\\messagebox.exe", path);
 
-                if (MoveFile(".\\messagebox.exe", destPath)) {
+                if (MoveFileEx(".\\messagebox.exe", destPath, MOVEFILE_REPLACE_EXISTING)) {
                     printf("File moved successfully to: %s\n", destPath);
 
                     /*
